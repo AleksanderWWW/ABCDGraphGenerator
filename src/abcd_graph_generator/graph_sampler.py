@@ -35,7 +35,7 @@ class ABCDParams:
         self.handle_if_outliers()
 
     def validate_w_and_s(self):
-        if len(self.w) == self.s.sum():
+        if len(self.w) != self.s.sum():
             raise ValueError("Inconsistent data")
 
     def validate_mu(self):
