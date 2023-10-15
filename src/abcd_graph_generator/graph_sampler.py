@@ -34,6 +34,8 @@ class ABCDParams:
 
         self.handle_if_outliers()
 
+        self.w = np.sort(self.w)[::-1]
+
     def validate_w_and_s(self):
         if len(self.w) != self.s.sum():
             raise ValueError("Inconsistent data")
@@ -63,10 +65,11 @@ class ABCDParams:
             raise ValueError("Inconsistent data: only μ or ξ may be provided")
 
     def handle_if_outliers(self):
-        if not self.has_outliers:
-            return
+        if self.has_outliers:
+            self.s = np.sort(self.s)[::-1]
 
-        # TODO sorting logic
+        else:
+            self.s = np.sort(self.s[2:])[::-1]
 
 
 def randround(x: Union[float, int]) -> int:
