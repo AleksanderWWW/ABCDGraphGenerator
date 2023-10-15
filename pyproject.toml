@@ -1,0 +1,62 @@
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+pattern = "default-unprefixed"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+# Python lack of functionalities from future versions
+importlib-metadata = { version = "*", python = "<3.8" }
+
+# dev
+pre-commit = { version = "*", optional = true }
+pytest = { version = ">=5.0", optional = true }
+
+[tool.poetry.extras]
+dev = [
+    "pre-commit",
+    "pytest",
+]
+
+[tool.poetry]
+authors = ["Aleksander Wojnarowicz <alwojnarowicz@gmail.com>"]
+description = "Artificial Benchmark for Community Detection (ABCD)"
+repository = "https://github.com/AleksanderWWW/ABCDGraphGenerator"
+include = ["CHANGELOG.md"]
+name = "ABCDGraphGenerator"
+readme = "README.md"
+version = "0.0.0"
+
+packages = [
+    { include = "abcd_graph_generator", from = "src" },
+]
+
+[tool.black]
+line-length = 120
+target-version = ['py37', 'py38', 'py39', 'py310']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+force_grid_wrap = 2
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = "E203"
