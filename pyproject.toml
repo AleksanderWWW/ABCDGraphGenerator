@@ -9,12 +9,9 @@ style = "semver"
 pattern = "default-unprefixed"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.10"
 
-# Python lack of functionalities from future versions
-importlib-metadata = { version = "*", python = "<3.8" }
-
-numpy = ">=1.24.0"
+numpy = ">=1.26.1"
 
 # dev
 pre-commit = { version = "*", optional = true }
@@ -41,7 +38,7 @@ packages = [
 
 [tool.black]
 line-length = 120
-target-version = ['py37', 'py38', 'py39', 'py310']
+target-version = ['py310']
 include = '\.pyi?$'
 exclude = '''
 /(
