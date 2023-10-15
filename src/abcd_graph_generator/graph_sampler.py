@@ -65,11 +65,7 @@ class ABCDParams:
             raise ValueError("Inconsistent data: only μ or ξ may be provided")
 
     def handle_if_outliers(self):
-        if not self.has_outliers:
-            self.s = np.sort(self.s)[::-1]
-
-        else:
-            self.s = np.sort(self.s[2:])[::-1]
+        self.s = np.sort(self.s[2:])[::-1] if self.has_outliers else np.sort(self.s)[::-1]
 
 
 def randround(x: Union[float, int]) -> int:
