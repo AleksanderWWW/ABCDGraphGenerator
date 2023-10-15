@@ -65,7 +65,7 @@ class ABCDParams:
             raise ValueError("Inconsistent data: only μ or ξ may be provided")
 
     def handle_if_outliers(self):
-        if self.has_outliers:
+        if not self.has_outliers:
             self.s = np.sort(self.s)[::-1]
 
         else:
