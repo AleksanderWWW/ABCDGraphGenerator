@@ -1,3 +1,7 @@
+__all__ = [
+    "trunc_powerlaw_weights",
+]
+
 import numpy as np
 
 
