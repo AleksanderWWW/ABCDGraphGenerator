@@ -1,5 +1,4 @@
 import copy
-import random
 from typing import Set
 
 import numpy as np
@@ -57,60 +56,3 @@ def _raise_for_values(slots: np.ndarray, clusters: np.ndarray) -> None:
     min_clusters = np.min(clusters)
     if min_clusters != 1:
         raise ValueError(f"Cluster min expected to be 1. Actual: {min_clusters}.")
-
-
-def cl_model(clusters: np.ndarray, params: ABCDParams) -> Set:
-    xil, xig = np.array([]), None
-    if not (params.has_outliers and params.is_CL):
-        raise ValueError()
-
-    cluster_weight = np.zeros(len(params.s))
-    for i, weight in enumerate(params.w):
-        cluster_weight[clusters[i]] += weight
-
-    total_weight = cluster_weight.sum()
-    if params.is_local:
-        xil = np.array([params.mu / (1 - cl / total_weight) for cl in cluster_weight])
-        if xil.max() < 1:
-            raise ValueError("μ is too large to generate a graph")
-    else:
-        if not params.xi:
-            xig = params.mu / (1 - (cluster_weight**2).sum() / total_weight**2)
-            if xig < 1:
-                raise ValueError("μ is too large to generate a graph")
-        else:
-            xig = params.xi
-
-    wf = params.w.astype(dtype=np.float64)
-    edges = set()
-
-    for i in params.s:
-        local_edges = set()
-        idx1 = clusters[[clusters == i]]
-        w1 = wf[idx1]
-
-        xi = xil[i] if params.is_local else xig
-        m = utils.randround((1 - xi) * w1.sum() / 2)
-
-        while len(local_edges) < m:
-            a = random.choices(population=idx1, weights=w1, k=m - len(local_edges))
-            b = random.choices(population=idx1, weights=w1, k=m - len(local_edges))
-
-            for p, q in zip(a, b):
-                if a == b:
-                    continue
-
-                local_edges.add((min(p, q), max(p, q)))
-        edges = edges.union(local_edges)
-
-    wwt = np.array([xil[clusters[j]] * x for j, x in enumerate(wf)]) if params.is_local else xig * wf
-
-    while 2 * len(edges) < total_weight:
-        a = random.choices(population=params.w, weights=wwt, k=utils.randround(total_weight / 2) - len(edges))
-        b = random.choices(population=params.w, weights=wwt, k=utils.randround(total_weight / 2) - len(edges))
-        for p, q in zip(a, b):
-            if p == q:
-                continue
-            edges.add((min(p, q), max(p, q)))
-
-    return edges
