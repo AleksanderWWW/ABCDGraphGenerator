@@ -18,9 +18,6 @@ from abcd_graph_generator.model.model import GraphGenModel
 
 
 def cl_model(clusters: np.ndarray, params: ABCDParams) -> Set[Tuple[int, int]]:
-    if not (params.has_outliers and params.is_CL):
-        raise ValueError()
-
     model = LocalCLModel(params, clusters) if params.is_local else GlobalCLModel(params, clusters)
 
     return model.get_edges()
@@ -28,15 +25,10 @@ def cl_model(clusters: np.ndarray, params: ABCDParams) -> Set[Tuple[int, int]]:
 
 class CLModel(GraphGenModel):
     def __init__(self, params: ABCDParams, clusters: np.ndarray) -> None:
-        self.params = params
-        self.clusters = clusters
+        if not (params.has_outliers and params.is_CL):
+            raise ValueError("Neither `is_CL` nor `has_outliers` param can be set to False")
         self.wf = params.w.astype(dtype=np.float64)
-
-        self.cluster_weight = np.zeros(len(params.s))
-        for i, weight in enumerate(params.w):
-            self.cluster_weight[clusters[i]] += weight
-
-        self.total_weight = self.cluster_weight.sum()
+        super().__init__(params, clusters)
 
     def get_wwt(self) -> np.ndarray:
         ...

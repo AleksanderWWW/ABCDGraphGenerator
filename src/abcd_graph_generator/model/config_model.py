@@ -15,19 +15,9 @@ from abcd_graph_generator.model.model import GraphGenModel
 
 class ConfigModel(GraphGenModel):
     def __init__(self, clusters: np.ndarray, params: ABCDParams) -> None:
-        self.clusters = clusters
-        self.params = params
-
         if params.is_CL or params.is_local:
-            raise ValueError
-
-        cluster_weight = np.zeros(len(params.s)).astype(dtype=int)
-        for i, weight in enumerate(params.w):
-            cluster_weight[clusters[i]] += weight
-
-        self.cluster_weight = cluster_weight
-
-        self.total_weight = cluster_weight.sum()
+            raise ValueError("Neither `is_CL` nor `is_local` param can be set to True")
+        super().__init__(params, clusters)
 
     def _get_xig(self) -> float:
         if self.params.has_outliers:
