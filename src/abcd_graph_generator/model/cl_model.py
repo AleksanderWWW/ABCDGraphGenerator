@@ -14,6 +14,7 @@ from abcd_graph_generator import (
     ABCDParams,
     utils,
 )
+from abcd_graph_generator.model.model import GraphGenModel
 
 
 def cl_model(clusters: np.ndarray, params: ABCDParams) -> Set[Tuple[int, int]]:
@@ -25,7 +26,7 @@ def cl_model(clusters: np.ndarray, params: ABCDParams) -> Set[Tuple[int, int]]:
     return model.get_edges()
 
 
-class CLModelTemplate:
+class CLModel(GraphGenModel):
     def __init__(self, params: ABCDParams, clusters: np.ndarray) -> None:
         self.params = params
         self.clusters = clusters
@@ -68,7 +69,7 @@ class CLModelTemplate:
         return edges
 
 
-class LocalCLModel(CLModelTemplate):
+class LocalCLModel(CLModel):
     def __init__(self, params: ABCDParams, clusters: np.ndarray) -> None:
         super().__init__(params, clusters)
         self.xil = np.array([self.params.mu / (1 - cl / self.total_weight) for cl in self.cluster_weight])
@@ -83,7 +84,7 @@ class LocalCLModel(CLModelTemplate):
         return _get_local_edges(self.clusters, self.wf, xi, i)
 
 
-class GlobalCLModel(CLModelTemplate):
+class GlobalCLModel(CLModel):
     def __init__(self, params: ABCDParams, clusters: np.ndarray) -> None:
         super().__init__(params, clusters)
         if not params.xi:

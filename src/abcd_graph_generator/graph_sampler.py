@@ -1,10 +1,21 @@
+__all__ = [
+    "gen_graph",
+]
+
+import collections
 import copy
-from typing import Set
+from typing import (
+    NamedTuple,
+    Set,
+    Tuple,
+)
 
 import numpy as np
 
 import abcd_graph_generator.utils as utils
 from abcd_graph_generator.abcd_params import ABCDParams
+from abcd_graph_generator.model.cl_model import cl_model
+from abcd_graph_generator.model.config_model import config_model
 
 
 def populate_clusters(params: ABCDParams) -> np.ndarray:
@@ -56,3 +67,11 @@ def _raise_for_values(slots: np.ndarray, clusters: np.ndarray) -> None:
     min_clusters = np.min(clusters)
     if min_clusters != 1:
         raise ValueError(f"Cluster min expected to be 1. Actual: {min_clusters}.")
+
+
+def gen_graph(params: ABCDParams) -> NamedTuple[Set[Tuple[int, int]], np.ndarray]:
+    result = collections.namedtuple("result", ["edges", "clusters"])
+    clusters = populate_clusters(params)
+
+    edges = cl_model(clusters, params) if params.is_CL else config_model(clusters, params)
+    return result(edges=edges, clusters=clusters)

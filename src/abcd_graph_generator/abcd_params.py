@@ -10,6 +10,15 @@ import numpy as np
 
 @dataclass(slots=True)
 class ABCDParams:
+    """
+    Params for the ABCD model.
+
+    Args:
+        w: The exact (or expected) degree distribution w = (w1, ..., wn) of type numpy.ndarray (1D)
+        s: The sequence of cluster sizes s = (s1, ..., sk) satisfying s.sum() == len(w), of type numpy.ndarray (1D)
+        xi: The mixing parameter of type float (default: None).
+    """
+
     w: np.ndarray
     s: np.ndarray
     mu: Optional[float] = None

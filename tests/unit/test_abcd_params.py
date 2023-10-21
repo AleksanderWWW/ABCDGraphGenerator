@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pytest
 
-from abcd_graph_generator import ABCDParams
+from abcd_graph_generator.abcd_params import ABCDParams
 
 
 class TestABCDParams(unittest.TestCase):
