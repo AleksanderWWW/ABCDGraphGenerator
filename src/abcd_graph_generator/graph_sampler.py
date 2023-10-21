@@ -5,7 +5,6 @@ __all__ = [
 import collections
 import copy
 from typing import (
-    NamedTuple,
     Set,
     Tuple,
 )
@@ -69,7 +68,7 @@ def _raise_for_values(slots: np.ndarray, clusters: np.ndarray) -> None:
         raise ValueError(f"Cluster min expected to be 1. Actual: {min_clusters}.")
 
 
-def gen_graph(params: ABCDParams) -> NamedTuple[Set[Tuple[int, int]], np.ndarray]:
+def gen_graph(params: ABCDParams) -> Tuple[Set[Tuple[int, int]], np.ndarray]:
     result = collections.namedtuple("result", ["edges", "clusters"])
     clusters = populate_clusters(params)
 
