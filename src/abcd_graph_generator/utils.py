@@ -5,8 +5,6 @@ __all__ = [
     "minmax",
 ]
 
-"""Module to host helper functions for calculations."""
-
 from typing import (
     Iterable,
     Tuple,
@@ -15,6 +13,9 @@ from typing import (
 )
 
 import numpy as np
+
+"""Module to host helper functions for calculations."""
+
 
 T = TypeVar("T")
 

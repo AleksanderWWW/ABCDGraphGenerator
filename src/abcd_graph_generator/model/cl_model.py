@@ -19,7 +19,11 @@ from abcd_graph_generator.utils import minmax
 
 
 def cl_model(clusters: np.ndarray, params: ABCDParams) -> Set[Tuple[int, int]]:
-    model = LocalCLModel(params, clusters) if params.is_local else GlobalCLModel(params, clusters)
+    model = (
+        LocalCLModel(params, clusters)
+        if params.is_local
+        else GlobalCLModel(params, clusters)
+    )
 
     return model.get_edges()
 
@@ -27,7 +31,9 @@ def cl_model(clusters: np.ndarray, params: ABCDParams) -> Set[Tuple[int, int]]:
 class CLModel(GraphGenModel):
     def __init__(self, params: ABCDParams, clusters: np.ndarray) -> None:
         if params.has_outliers or not params.is_CL:
-            raise ValueError("To use CL model, `is_CL` param needs to be set to True, while `has_outliers` - to False")
+            raise ValueError(
+                "To use CL model, `is_CL` param needs to be set to True, while `has_outliers` - to False"
+            )
         self.wf = params.w.astype(dtype=np.float64)
         super().__init__(params, clusters)
 
@@ -48,11 +54,15 @@ class CLModel(GraphGenModel):
 
         while 2 * len(edges) < self.total_weight:
             a = random.choices(
-                population=self.params.w, weights=wwt, k=utils.randround(self.total_weight / 2) - len(edges)
+                population=self.params.w,
+                weights=wwt,
+                k=utils.randround(self.total_weight / 2) - len(edges),
             )
 
             b = random.choices(
-                population=self.params.w, weights=wwt, k=utils.randround(self.total_weight / 2) - len(edges)
+                population=self.params.w,
+                weights=wwt,
+                k=utils.randround(self.total_weight / 2) - len(edges),
             )
             for p, q in zip(a, b):
                 if p == q:
@@ -65,7 +75,12 @@ class CLModel(GraphGenModel):
 class LocalCLModel(CLModel):
     def __init__(self, params: ABCDParams, clusters: np.ndarray) -> None:
         super().__init__(params, clusters)
-        self.xil = np.array([self.params.mu / (1 - cl / self.total_weight) for cl in self.cluster_weight])
+        self.xil = np.array(
+            [
+                self.params.mu / (1 - cl / self.total_weight)
+                for cl in self.cluster_weight
+            ]
+        )
         if self.xil.max() < 1:
             raise ValueError("μ is too large to generate a graph")
 
@@ -81,7 +96,9 @@ class GlobalCLModel(CLModel):
     def __init__(self, params: ABCDParams, clusters: np.ndarray) -> None:
         super().__init__(params, clusters)
         if not params.xi:
-            self.xig = params.mu / (1 - (self.cluster_weight**2).sum() / self.total_weight**2)
+            self.xig = params.mu / (
+                1 - (self.cluster_weight**2).sum() / self.total_weight**2
+            )
             if self.xig < 1:
                 raise ValueError("μ is too large to generate a graph")
         else:

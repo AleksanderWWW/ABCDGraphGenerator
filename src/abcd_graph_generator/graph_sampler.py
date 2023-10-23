@@ -23,7 +23,9 @@ def get_mul(params: ABCDParams) -> float:
     n = len(params.w)
     if params.has_outliers:
         s0 = params.s[0]
-        phi = 1 - sum((sl / (n - s0)) ** 2 for sl in params.s[2:]) * (n - s0) * params.xi / ((n - s0) * params.xi + s0)
+        phi = 1 - sum((sl / (n - s0)) ** 2 for sl in params.s[2:]) * (
+            n - s0
+        ) * params.xi / ((n - s0) * params.xi + s0)
     else:
         phi = 1 - sum((sl / n) ^ 2 for sl in params.s)
 
@@ -35,7 +37,9 @@ def get_tabu(params: ABCDParams) -> np.ndarray:
     n = len(params.w)
     L = sum(map(lambda d: min(1.0, params.xi * d), params.w))
     threshold = L + nout - L * nout / n - 1.0
-    idx = np.argmax(params.w <= threshold)  # index of the first elem of w that is less or equal to the threshold
+    idx = np.argmax(
+        params.w <= threshold
+    )  # index of the first elem of w that is less or equal to the threshold
 
     if len(params.w[idx:]) < nout:
         raise ValueError("Not enough nodes feasible for classification as outliers")
@@ -78,12 +82,16 @@ def populate_clusters(params: ABCDParams) -> np.ndarray:
             j += 1
 
         if j != j0:
-            raise ValueError(f"Could not find a large enough cluster for vertex of weight {weight}.")
+            raise ValueError(
+                f"Could not find a large enough cluster for vertex of weight {weight}."
+            )
 
         wts = slots[j0 + 1 : j]
 
         if wts.sum() != 0:
-            raise ValueError(f"Could not find an empty slot for vertex of weight {weight}.")
+            raise ValueError(
+                f"Could not find an empty slot for vertex of weight {weight}."
+            )
 
         loc = np.random.choice(range(j0 + 1, j + 1), p=wts)
         clusters[i] = loc
@@ -98,5 +106,7 @@ def gen_graph(params: ABCDParams) -> Tuple[Set[Tuple[int, int]], np.ndarray]:
     result = collections.namedtuple("result", ["edges", "clusters"])
     clusters = populate_clusters(params)
 
-    edges = cl_model(clusters, params) if params.is_CL else config_model(clusters, params)
+    edges = (
+        cl_model(clusters, params) if params.is_CL else config_model(clusters, params)
+    )
     return result(edges=edges, clusters=clusters)
