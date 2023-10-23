@@ -15,6 +15,7 @@ from abcd_graph_generator import (
     utils,
 )
 from abcd_graph_generator.model.model import GraphGenModel
+from abcd_graph_generator.utils import minmax
 
 
 def cl_model(clusters: np.ndarray, params: ABCDParams) -> Set[Tuple[int, int]]:
@@ -25,8 +26,8 @@ def cl_model(clusters: np.ndarray, params: ABCDParams) -> Set[Tuple[int, int]]:
 
 class CLModel(GraphGenModel):
     def __init__(self, params: ABCDParams, clusters: np.ndarray) -> None:
-        if not (params.has_outliers and params.is_CL):
-            raise ValueError("Neither `is_CL` nor `has_outliers` param can be set to False")
+        if params.has_outliers or not params.is_CL:
+            raise ValueError("To use CL model, `is_CL` param needs to be set to True, while `has_outliers` - to False")
         self.wf = params.w.astype(dtype=np.float64)
         super().__init__(params, clusters)
 
@@ -56,7 +57,7 @@ class CLModel(GraphGenModel):
             for p, q in zip(a, b):
                 if p == q:
                     continue
-                edges.add((min(p, q), max(p, q)))
+                edges.add(minmax((p, q)))
 
         return edges
 
@@ -105,9 +106,9 @@ def _get_local_edges(clusters, wf, xi, i) -> Set[Tuple[int, int]]:
         b = random.choices(population=idx1, weights=w1, k=m - len(local_edges))
 
         for p, q in zip(a, b):
-            if a == b:
+            if p == q:
                 continue
 
-            local_edges.add((int(min(p, q)), int(max(p, q))))
+            local_edges.add(minmax((p, q)))
 
     return local_edges
