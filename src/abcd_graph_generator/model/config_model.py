@@ -183,8 +183,10 @@ class ConfigModel(GraphGenModel):
 
             old_len = len(edges)
             edges.update(local_edges)
-            assert len(edges) == old_len + len(local_edges)
-            assert 2 * (len(local_edges) + len(recycle)) == len(stubs)
+            if len(edges) != old_len + len(local_edges):
+                raise ValueError("Assert condition not met")
+            if 2 * (len(local_edges) + len(recycle)) != len(stubs):
+                raise ValueError("Assert condition not met")
 
             for a, b in recycle:
                 w_internal[a] -= 1
@@ -202,7 +204,8 @@ class ConfigModel(GraphGenModel):
             for j in range(w_internal[i] + 1, self.params.w[i]):
                 stubs.append(i)
 
-        assert sum(self.params.w) == len(stubs) + sum(w_internal)
+        if self.params.w.sum() != len(stubs) + w_internal.sum():
+            raise ValueError("Assert condition not met")
 
         if self.params.has_outliers:
             if 2 * sum(
@@ -220,14 +223,17 @@ class ConfigModel(GraphGenModel):
 
         if len(stubs) % 2 == 1:
             maxi = 0
-            assert self.params.w[stubs[maxi]] > w_internal[stubs[maxi]]
+            if self.params.w[stubs[maxi]] <= w_internal[stubs[maxi]]:
+                raise ValueError("Assert condition not met")
             for i in range(1, len(stubs)):
                 si = stubs[i]
-                assert self.params.w[si] > w_internal[si]
+                if self.params.w[si] <= w_internal[si]:
+                    raise ValueError("Assert condition not met")
                 if self.params.w[si] > self.params.w[stubs[maxi]]:
                     maxi = i
             si = stubs.pop(maxi)
-            assert self.params.w[si] > w_internal[si]
+            if self.params.w[si] <= w_internal[si]:
+                raise ValueError("Assert condition not met")
             self.params.w[si] -= 1
 
         global_edges = set()
@@ -278,10 +284,12 @@ class ConfigModel(GraphGenModel):
 
                 old_len = len(edges)
                 edges.update(global_edges)
-                assert len(edges) == old_len + len(global_edges)
+                if len(edges) != old_len + len(global_edges):
+                    raise ValueError("Assert condition not met")
 
                 if not recycle:
-                    assert 2 * len(global_edges) == len(stubs)
+                    if 2 * len(global_edges) != len(stubs):
+                        raise ValueError("Assert condition not met")
                 else:
                     last_recycle = len(recycle)
                 recycle_counter = last_recycle
