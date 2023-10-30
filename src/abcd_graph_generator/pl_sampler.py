@@ -1,5 +1,5 @@
 __all__ = [
-    "trunc_powerlaw_weights",
+    "sample_communities",
 ]
 
 import warnings
