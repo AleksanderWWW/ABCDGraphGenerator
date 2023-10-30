@@ -1,2 +1,7 @@
+__pycache__
+
 # pycharm
 .idea
+
+# pytest
+.pytest_cache

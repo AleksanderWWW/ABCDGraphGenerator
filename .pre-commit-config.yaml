@@ -5,19 +5,10 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.1
     hooks:
-      - id: isort
-        args: [--settings-path, pyproject.toml]
-  - repo: https://github.com/psf/black
-    rev: 22.6.0
-    hooks:
-      - id: black
-        args: [--config, pyproject.toml]
-  - repo: https://github.com/pycqa/flake8
-    rev: 5.0.4
-    hooks:
-      - id: flake8
-        entry: pflake8
-        additional_dependencies: [ pyproject-flake8 ]
+      # Run the Ruff linter.
+      - id: ruff
+      # Run the Ruff formatter.
+      - id: ruff-format
