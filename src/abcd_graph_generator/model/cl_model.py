@@ -3,6 +3,7 @@ __all__ = [
 ]
 
 import random
+from abc import ABC, abstractmethod
 from typing import (
     Set,
     Tuple,
@@ -28,7 +29,7 @@ def cl_model(clusters: np.ndarray, params: ABCDParams) -> Set[Tuple[int, int]]:
     return model.get_edges()
 
 
-class CLModel(GraphGenModel):
+class CLModel(GraphGenModel, ABC):
     def __init__(self, params: ABCDParams, clusters: np.ndarray) -> None:
         if params.has_outliers or not params.is_CL:
             raise ValueError(
@@ -37,9 +38,11 @@ class CLModel(GraphGenModel):
         self.wf = params.w.astype(dtype=np.float64)
         super().__init__(params, clusters)
 
+    @abstractmethod
     def get_wwt(self) -> np.ndarray:
         ...
 
+    @abstractmethod
     def get_local_edges(self, i: int) -> Set[Tuple[int, int]]:
         ...
 
