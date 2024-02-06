@@ -16,6 +16,7 @@ from abcd_graph_generator import (
     ABCDParams,
     utils,
 )
+from abcd_graph_generator.logger import get_logger
 from abcd_graph_generator.model.model import GraphGenModel
 
 
@@ -29,11 +30,11 @@ def get_stubs(
     stubs = np.array(stubs, dtype=int)
 
     if w_internal[cluster].sum() != len(stubs) or utils.is_odd(len(stubs)):
-        raise RuntimeError
+        raise ValueError("Assertion failed")
 
     if idx == 0 and params.has_outliers:
         if len(stubs) != 0:
-            raise RuntimeError
+            raise ValueError("Assertion failed")
 
     np.random.shuffle(stubs)
 
@@ -42,6 +43,7 @@ def get_stubs(
 
 class ConfigModel(GraphGenModel):
     def __init__(self, clusters: np.ndarray, params: ABCDParams) -> None:
+        self.logger = get_logger()
         self.cluster_list: Optional[List[List[int]]] = None
         self.w_internal_raw: Optional[np.ndarray[float]] = None
         if params.is_CL or params.is_local:
@@ -195,7 +197,7 @@ class ConfigModel(GraphGenModel):
             unresolved_collisions += len(recycle)
 
         if unresolved_collisions > 0:
-            print(
+            self.logger.info(
                 f"Unresolved_collisions: {unresolved_collisions}; fraction: {2 * unresolved_collisions / self.total_weight}"
             )
 
@@ -215,7 +217,7 @@ class ConfigModel(GraphGenModel):
                     if cluster == 1
                 ]
             ) > len(stubs):
-                print(
+                self.logger.info(
                     "Because of low value of ξ the outlier nodes form a community. It is recommended to increase ξ."
                 )
 
@@ -305,7 +307,7 @@ class ConfigModel(GraphGenModel):
 
                 p1 = recycle.pop(0)
                 x = random.choice(list(edges))
-                edges.discard(x)  # Use discard to remove x from the set
+                edges.discard(x)
 
                 if random.random() < 0.5:
                     newp1 = (min(p1[0], p2[0]), max(p1[1], p2[1]))
@@ -322,9 +324,11 @@ class ConfigModel(GraphGenModel):
 
                     if recycle:
                         unresolved_collisions = len(recycle)
-                    print(
-                        f"Very hard graph. Failed to generate {unresolved_collisions} edges; fraction: {2 * unresolved_collisions / self.total_weight}"
-                    )
+                        self.logger.info(
+                            f"Very hard graph. "
+                            f"Failed to generate {unresolved_collisions} edges; fraction: "
+                            f"{2 * unresolved_collisions / self.total_weight}"
+                        )
 
         return edges
 
